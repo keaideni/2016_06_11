@@ -324,6 +324,16 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 			if((flag == para.SweepNo -1) &&(OS == (para.LatticeSize - 2) / 2))
 			{
+                                std::ofstream outfile1, outfile2;
+                                if(OrbitalM % 2 == 1)
+                                {
+                                        outfile1.open("./result/resonator.txt");
+                                        outfile2.open("./result/qubit.txt");
+                                }else
+                                {
+                                        outfile1.open("./result/qubit.txt");
+                                        outfile2.open("./result/resonator.txt");
+                                }
 
 				int i(OrbitalM + 1);//this label for Sigma;
 				int j(OrbitalM - 1);//this label for Sigmadag and N;
@@ -342,6 +352,9 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 					std::cout<<"Distence = " << distence << ", the correlation = "
 					<<correlation<<std::endl;
+                                        outfile1<<"Distence = " << distence << ", the correlation = "
+                                        <<correlation<<std::endl;
+
 
                                         if(fflag == 1)
                                         {
@@ -375,6 +388,9 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
                                         std::cout<<"Distence = " << distence << ", the correlation = "
                                         <<correlation<<std::endl;
+                                        outfile2<<"Distence = " << distence << ", the correlation = "
+                                        <<correlation<<std::endl;
+
 
                                         if(fflag == 1)
                                         {
@@ -388,6 +404,9 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 
                                 }
+
+                                outfile1.close();
+                                outfile2.close();
 
 
 
