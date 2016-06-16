@@ -1140,20 +1140,27 @@ void OP::truncR(const OP& O, const OP& trunc)
 
 	for (auto ita = O.QDim.begin(); ita != O.QDim.end(); ita++)
 	{
+
 		auto it = trunc.QDim.find(ita->first);
+
 		if (it != trunc.QDim.end())
 		{
+
 			QDim.insert(std::pair<int, int>(ita->first, trunc.QDim.at(ita->first)));
+
 		}
 	}
 
 	for (auto ita = O.QMat.begin(); ita != O.QMat.end(); ita++)
 	{
+
 		auto it = trunc.QMat.find(ita->first);
+
 		if (it != trunc.QMat.end())
 		{
 
 			RLQ.insert(std::pair<int, int>(ita->first, O.RLQ.at(ita->first)));
+			
 			QMat.insert(std::pair<int, MatrixXd>(ita->first, ita->second * it->second));
 		}
 	}
@@ -1166,7 +1173,9 @@ void OP::truncR(const OP& O, const OP& trunc)
 void OP::trunc(const OP& truncU)
 {
 	OP temp;
+
 	temp.truncR(*this, truncU);
+
 	truncL(truncU, temp);
 }
 

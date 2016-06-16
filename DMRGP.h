@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include "SuperEnergy.h"
+#include "Corr.h"
 #include <time.h>
 
 
@@ -22,6 +23,8 @@ public:
 
 	Sub m, n;
 
+	QWave fwave;//to store the final wavefunction.
+
 
 
 
@@ -29,6 +32,12 @@ public:
 
 	int Gdir;//Growth direction: for the absobe way of the two blocks. 1 for the m and -1 for the n.
 
+//=================to caculate the correlation function of the system.===============================
+        Corr corr;
+        Corr corrn, corrdag;
+        double correlation;
+        void CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag);
+        void CorrUpdate(const int& dir, const Parameter& para);
 
 
 

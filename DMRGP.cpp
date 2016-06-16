@@ -23,8 +23,8 @@ DMRGP::DMRGP(Parameter& para)
 
 
 	//===========this label for the way of growth the blocks======
-	OrbitalM = 4;
-	OrbitalN = 4;
+	OrbitalM = 2;
+	OrbitalN = 2;
 	Gdir = 1;
 	//====================================================
 
@@ -280,7 +280,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 	{
 
 		SaveAll << "the " << (flag + 1) << "th Sweep" << std::endl;
-		//std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
+		std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
 		//dir*=(-1);//local here for the first left direction sweep
 
 
@@ -297,17 +297,104 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 			//==================this aprt is for the first right sweep, if first left sweep, it should absent==========
 			if (OS == (para.LatticeSize - 2) / 2)
+			{
 				Gdir *= -1;
-			//============================present with line 356=================================
+
+			}
+			//============================present with line dir *= -1 at the end of while(true)=================================
 
 			Sys.read(OS);//Sys.show();
 			Env.read(OE);//Env.show();
+
+
+			
+
 
 			OP truncU;
 
 			//exit(1);
 
 			getEnergySweepP(para, dir);
+
+
+			
+
+
+			//this one is for the break point at the middle of the line.
+
+			if((flag == para.SweepNo -1) &&(OS == (para.LatticeSize - 2) / 2))
+			{
+
+				int i(OrbitalM + 1);//this label for Sigma;
+				int j(OrbitalM - 1);//this label for Sigmadag and N;
+                                int fflag(1);
+				while(true)
+				{
+					
+					
+
+					corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+					//corrn.show();Sys.SubSysEye.show();
+
+					CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+
+					int distence(i - j);
+
+					std::cout<<"Distence = " << distence << ", the correlation = "
+					<<correlation<<std::endl;
+
+                                        if(fflag == 1)
+                                        {
+                                                i += 2;
+                                        }else
+                                        {
+                                                j-= 2;
+                                        }
+                                        if((i>para.LatticeSize/2)||(j<0))break;
+                                        fflag *= -1;
+
+
+				}
+
+
+
+                                i=(OrbitalM + 2);//this label for Sigma;
+                                j=(OrbitalM - 2);//this label for Sigmadag and N;
+                                fflag=1;
+                                while(true)
+                                {
+                                        
+                                        
+
+                                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+                                        //corrn.show();Sys.SubSysEye.show();
+
+                                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+
+                                        int distence(i - j);
+
+                                        std::cout<<"Distence = " << distence << ", the correlation = "
+                                        <<correlation<<std::endl;
+
+                                        if(fflag == 1)
+                                        {
+                                                i += 2;
+                                        }else
+                                        {
+                                                j-= 2;
+                                        }
+                                        if((i>para.LatticeSize/2)||(j<0))break;
+                                        fflag *= -1;
+
+
+                                }
+
+
+
+
+				flag = para.SweepNo;
+				break;
+			}
 
 			if (dir == 1)
 			{
@@ -327,8 +414,11 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 				}
 			}
 
-
+			
 			truncUpdateSweepP(para, OS, OE, dir);
+
+
+
 
 			if (dir == 1)
 			{
@@ -360,7 +450,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 			//==================this aprt is for the first left sweep, if first left sweep, it should absent==========
 			/*if(OS == (para.LatticeSize -2)/2)
 			Gdir *= -1;*/
-			//============================present with line 277========================================
+			//============================present with line dir *= -1 before while(true)========================================
 
 
 		}
@@ -496,9 +586,9 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 	std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy << ",    LE = " << std::setprecision(15)<<LEnergy  << ",    RE = " << std::setprecision(15)<<REnergy<<std::endl
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
+        << "      OrbitalM ="  <<std::setw(2)<<OrbitalM << ",  OrbitalN =" <<std::setw(2)<< OrbitalN
 	<<",    trace = "<< std::setprecision(15)<<trace
 	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;
-
 
 	if (Sys.Orbital == (para.LatticeSize - 2) / 2)
 	{
@@ -507,6 +597,8 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 		MiuN = Energy - LEnergy;
 		FTrace = trace;
 		FTruncerr = truncerr;
+                fwave = Supp.wave;
+		
 	}
 
 
@@ -517,6 +609,15 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 {
+
+        CorrUpdate(dir, para);
+        /*std::cout<<"the corr Dim: "<<std::endl;
+        for(auto it = corr.CorrO.QDim.begin(); it != corr.CorrO.QDim.end(); ++it)
+        {
+                std::cout << it->first << "=>" << it->second<<std::endl;
+        }*/
+
+	
 
 
 	//std::cout<<dir<<std::endl;
@@ -555,6 +656,8 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 	}
 	else
 	{
+		
+
 
 		if (Gdir == 1)
 		{
@@ -569,6 +672,8 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 		}
 		else
 		{
+
+
 			if (m.QorRl == 0)
 			{
 				newS.update(para, OE - 1, Env, m, para.gl);
@@ -577,6 +682,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			{
 				newS.update(para, OE - 1, Env, m, para.gr);
 			}
+			
 		}
 
 
@@ -587,6 +693,119 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 
 		newS.save();
 	}
+
+        /*std::cout<<"the newS Dim: "<<std::endl;
+        for(auto it = newS.SubSysEye.QDim.begin(); it != newS.SubSysEye.QDim.end(); ++it)
+        {
+                std::cout << it->first << "=>" << it->second<<std::endl;
+        }*/
 	OE += dir;
 	OS += dir;
+}
+
+
+
+
+void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
+{
+	QWave wave1, wave2;
+	std::vector<double> f, f1;
+	fwave.Wave2f(f);
+	double number(0);
+	wave1.clear();
+	wave1.OSWave2New(corrn, fwave);
+	wave1.Wave2f(f1);
+
+	for(int i = 0; i < f.size(); ++i)
+	{
+		number += f[i]*f1[i];
+	}
+	wave1.clear();
+	wave1.OSWave2New(corrcdag, fwave);
+	wave2.clear();
+	wave2.OEWave2New(corrc, wave1);
+	wave2.Wave2f(f1);
+	correlation = 0;
+	for(int i = 0; i < f.size(); ++i)
+	{
+		correlation += f[i]*f1[i];
+	}
+	correlation /= number;
+
+
+}
+
+void DMRGP::CorrUpdate(const int& dir, const Parameter& para)
+{
+        //this is an interesting phenomenon, why this part must be in this position?!
+        if((dir == -1)&&(OrbitalM > para.LatticeSize/4)&&(OrbitalN > para.LatticeSize/4 + 1 ) )
+        {
+                //when the block Env eat the point m, the corr1 begins to initialize and update.
+                if(OrbitalM == OrbitalN)
+                {
+                                        
+                        //if(OrbitalN == para.LatticeSize/4 + 1) return;
+                        corr.Initial(Env, m, OrbitalM, 1, truncU);
+                        corr.save();
+                        for(int i = para.LatticeSize/2; i > OrbitalM; --i)
+                        {
+                                corr.read(i, 1);
+                                corr.update(m, truncU, 1);
+                                corr.save();
+                        }
+                }//when the block Env eat the point n, the corr1 only update.
+                else
+                {
+                        for(int i = para.LatticeSize/2; i >= OrbitalN; --i)
+                        {
+                                corr.read(i, 1);
+                                corr.update(n, truncU, 2);
+                                corr.save();
+                        }
+                }
+
+        }else if((dir == 1) && (OrbitalM <= (para.LatticeSize ) / 4+1 )&&(OrbitalN<=para.LatticeSize/4))
+        {
+                //when the block Sys eat the point m, the corr2 and corr3 begin to initialize and update.
+                if(OrbitalM == OrbitalN)
+                {
+                        corr.Initial(Sys, m, OrbitalM, 2, truncU);
+                        corr.save();
+                        corr.Initial(Sys, m, OrbitalM, 3, truncU);
+                        corr.save();
+                        for(int i = 2; i < OrbitalM; ++i)
+                        {
+                                corr.read(i, 2);
+                                corr.update(m, truncU, 1);
+                                corr.save();
+
+
+                                corr.read(i, 3);
+                                corr.update(m, truncU, 1);
+                                corr.save();
+
+                        }
+                }//when the block Env eat the point n, the corr1 only update.
+                else
+                {
+                        for(int i = 2; i <= OrbitalN; ++i)
+                        {
+                                corr.read(i, 2);
+                                //corr.corro().show();
+                                /*OP temp;
+                                temp.kronO(n.SubSysEye, corr.corro());*/
+                                corr.update(n, truncU, 2);
+                                corr.save();
+
+                                corr.read(i, 3);
+                                
+                                //corr.corro().show();
+                                
+                                corr.update(n, truncU, 2);
+                                corr.save();
+
+
+                        }
+                }
+        }
 }
