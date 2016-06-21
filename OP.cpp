@@ -162,7 +162,7 @@ void OP::getValue(const int& str, const int& i, double& y)
 
 
 
-void OP::findDim(const OP& a, const OP& b, std::map<int, int> &oldDim, std::map<std::pair<int, int>, int, classcom> &startDim)
+void OP::findDim(const OP& a, const OP& b, std::unordered_map<int, int> &oldDim, std::unordered_map<std::pair<int, int>, int, classcom> &startDim)
 {
 	for (auto ita = a.QDim.begin(); ita != a.QDim.end(); ita++)
 	{
@@ -202,7 +202,7 @@ void OP::kronO(const OP &a, const OP &b)
 
 
 	//find the dimention of each good quantum number, and label the place to put the kron of two blocks.
-	std::map<std::pair<int, int>, int, classcom> startDim;
+	std::unordered_map<std::pair<int, int>, int, classcom> startDim;
 	findDim(a, b, QDim, startDim);
 
 
@@ -1342,8 +1342,9 @@ void OP::save(std::ofstream& outfile)
 	//save the QMat.
 	for (auto it = QMat.begin(); it != QMat.end(); it++)
 	{
+                outfile << it->first << std::endl;
 
-		outfile<<it->second<<std::endl;
+		outfile << it->second << std::endl;
 		/*for(int i=0; i<it->second.n_rows; i++)
 		{
 		for(int j=0; j<it->second.n_cols; j++)
@@ -1398,20 +1399,24 @@ void OP::read(std::ifstream& infile)
 
 
 	//read in the QMat.
-	for (auto it = RLQ.begin(); it != RLQ.end(); it++)
+	for (int it = 0; it < RLQ.size(); ++it)
 	{
 
-		MatrixXd A(QDim.at(it->second), QDim.at(it->first));
-		for (int i = 0; i < QDim[it->second]; i++)
+                int tempQR;
+
+                infile >> tempQR;
+
+		MatrixXd A(QDim.at(RLQ.at(tempQR)), QDim.at(tempQR));
+		for (int i = 0; i < QDim.at(RLQ.at(tempQR)); i++)
 		{
-			for (int j = 0; j < QDim[it->first]; j++)
+			for (int j = 0; j < QDim.at(tempQR); j++)
 			{
 				infile >> A(i, j);
 
 			}
 		}
 
-		QMat[it->first] = A;
+		QMat[tempQR] = A;
 	}
 	//infile.close();
 

@@ -6,12 +6,23 @@
 
 #include "Sub.h"
 
+struct classcomm
+{
+        bool operator()(const std::pair<int, int>& l, const std::pair<int, int>& r) const
+        {
+                return (l.first + l.second < r.first + r.second) 
+                        || (l.first + l.second == r.first + r.second && l.first < r.first);
+        }
+};
+
+
+
 
 class QWave
 {
 public:
 	//                             m         n        sys is L and env is R
-	std::map<std::pair<int, int>, OP, classcom> WavePart;
+	std::map<std::pair<int, int>, OP, classcomm> WavePart;
 
 
 

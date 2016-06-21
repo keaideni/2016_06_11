@@ -282,7 +282,7 @@ void QWave::f2Wave(const VectorXd& f)
 void QWave::Wave2OP(OP& O, const OP& sys, const OP& m, const OP& n, const OP& env) const
 {
 	OP tempS, tempE;
-	std::map<std::pair<int, int>, int, classcom> startDimS, startDimE;
+	std::unordered_map<std::pair<int, int>, int, classcom> startDimS, startDimE;
 	tempS.findDim(sys, m, tempS.QDim, startDimS);
 	tempE.findDim(env, n, tempE.QDim, startDimE);
 	//tempS.show();
@@ -353,7 +353,7 @@ void QWave::Wave2OP(OP& O, const OP& sys, const OP& m, const OP& n, const OP& en
 {
 	O.clear();
 	OP tempS, tempE;
-	std::map<std::pair<int, int>, int, classcom> startDimS, startDimE;
+	std::unordered_map<std::pair<int, int>, int, classcom> startDimS, startDimE;
 	switch (way)
 	{
 	case 1://==============add m on the right edge of system=============
