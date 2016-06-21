@@ -274,7 +274,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 {
 
 	int flag(0);
-
+	para.read();
 	FEnergy = 10000000000;
 	while (flag<para.SweepNo)
 	{
