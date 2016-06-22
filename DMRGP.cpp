@@ -261,6 +261,9 @@ void DMRGP::truncUpdateP(const Parameter& para, int& OS, int& OE, int dir)
 
 	newE.save();
 
+        truncU.truncsave(OS);
+        truncUR.truncsave(OE);
+
 }
 
 

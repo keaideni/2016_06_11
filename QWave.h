@@ -24,6 +24,8 @@ public:
 	//                             m         n        sys is L and env is R
 	std::map<std::pair<int, int>, OP, classcomm> WavePart;
 
+	
+
 
 
 
@@ -91,6 +93,9 @@ public:
 	void BlockWave(int l, const OP& OPl, int m, const OP& OPm, int n, const OP& OPn, int r, const OP& OPr, QWave& storewave) const;*/
 
 
+	//=============for the initialation
+
+	void onestepSE(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n);
 
 
 

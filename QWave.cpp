@@ -823,4 +823,26 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 
 
+//=========for the initial wave======================
+/*void QWave::onestepSE(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n)
+{
+	std::unordered_map<std::pair<int, int> int> startDimS;
+	std::unordered_map<int, int> nothingDim;
 
+	tempS.findDim(sys, m, tempS.QDim, startDimS);
+
+
+
+
+	for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
+	{
+		OP tempop;
+
+
+
+		for(int labelm = 0; labelm < m.RLQ.size(); ++labelm)
+		{
+			temp
+		}
+	}
+}*/

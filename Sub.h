@@ -61,7 +61,7 @@ public:
 	void read(int orbital_);
 };
 
-std::string itos(int i);
+
 
 
 

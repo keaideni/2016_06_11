@@ -11,6 +11,8 @@
 #include <Eigen/Eigenvalues> 
 #include "Parameter.h"
 
+
+
 struct classcom
 {
 	size_t operator()(const std::pair<int, int>& l) const
@@ -104,7 +106,8 @@ public:
 
 
 
-        
+        void truncsave(const int& orbital);
+        void truncread(const int& orbital);
 };
 
 
@@ -114,7 +117,7 @@ OP operator*(const double& x, OP& a);
 
 
 
-
+std::string itos(int i);
 
 
 

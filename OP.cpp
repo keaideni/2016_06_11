@@ -7,6 +7,14 @@ struct Eigstruct
 	VectorXd state;
 };
 
+
+std::string itos(int i)
+{
+        std::stringstream s;
+        s << i;
+        return s.str();
+}
+
 bool comp(const Eigstruct& a, const Eigstruct& b);
 bool comp(const Eigstruct& a, const Eigstruct& b)
 {
@@ -1519,3 +1527,110 @@ void OP::read(std::ifstream& infile)
 
 
 
+//save the truncation operator data.
+void OP::truncsave(const int& orbital)
+{
+        //std::ofstream outfile(str);
+        //save the QDim.
+        std::string str = itos(orbital);
+
+        str = "./data/trunc" +str;
+
+
+        std::ofstream outfile(str);
+
+        outfile.precision(30);
+
+
+        outfile << QDim.size() << std::endl;
+        for (auto it = QDim.begin(); it != QDim.end(); it++)
+        {
+                outfile << it->first << "       " << it->second << "        ";
+        }
+
+
+        //save the RLQ.
+        outfile << RLQ.size() << std::endl;
+        for (auto it = RLQ.begin(); it != RLQ.end(); it++)
+        {
+                outfile << it->first << "          " << it->second << "             ";
+        }
+        outfile << std::endl;
+
+
+
+        //save the QMat.
+        for (auto it = QMat.begin(); it != QMat.end(); it++)
+        {
+                outfile << it->first << std::endl;
+
+                outfile << it->second << std::endl;
+                
+
+        }
+
+
+        outfile.close();
+}
+
+
+
+
+//read the truncation operator data from the file.
+void OP::truncread(const int& orbital)
+{
+        std::string str = itos(orbital);
+
+        str = "./data/trunc" +str;
+
+        std::ifstream infile(str);
+        int size1;
+        infile >> size1;
+
+        int tempQ;
+        int tempint;
+        for (int i = 0; i < size1; i++)
+        {
+
+                infile >> tempQ >> tempint;
+                QDim[tempQ] = tempint;
+        }
+
+        //read in the RLQ.
+        int size2;
+        infile >> size2;
+        int tempQ1;
+        for (int i = 0; i < size2; i++)
+        {
+                infile >> tempQ >> tempQ1;
+                RLQ[tempQ] = tempQ1;
+        }
+
+
+
+
+        //read in the QMat.
+        for (int it = 0; it < RLQ.size(); ++it)
+        {
+
+                int tempQR;
+
+                infile >> tempQR;
+
+                MatrixXd A(QDim.at(RLQ.at(tempQR)), QDim.at(tempQR));
+                for (int i = 0; i < QDim.at(RLQ.at(tempQR)); i++)
+                {
+                        for (int j = 0; j < QDim.at(tempQR); j++)
+                        {
+                                infile >> A(i, j);
+
+                        }
+                }
+
+                QMat[tempQR] = A;
+        }
+        infile.close();
+
+
+
+}
