@@ -61,7 +61,11 @@ DMRGP::DMRGP(Parameter& para)
 	Abegin = clock();
 
 
-
+        Fdata.open("./result/data");
+        if (!Fdata.is_open())
+        {
+                std::cout << "the file doesn't exit!" << std::endl;
+        }
 
 
 	SweepP(para, OS, OE, dir);
@@ -72,16 +76,10 @@ DMRGP::DMRGP(Parameter& para)
 	SaveAll << "The eigenstate calculation takes " << saveT << " seconds!" << std::endl;
 	SaveAll.close();
 
-	Fdata.open("./result/data");
-	if (!Fdata.is_open())
-	{
-		std::cout << "the file doesn't exit!" << std::endl;
-	}
+	
 
 
-	Fdata << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
-		<< ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
-		<< ",    truncerr = " << std::setprecision(15) << FTruncerr << std::endl;
+	
 
 	Fdata.close();
 }
@@ -477,6 +475,15 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 		flag++;
 	}
 
+        Fdata << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
+                << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
+                << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
+                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
+        std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
+                << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
+                << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
+                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
+
 }
 
 
@@ -491,6 +498,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	int qtot = para.ParticleNo;
 	double trace;
 	double truncerr;
+        double Entanglment;
 
 
 
@@ -587,7 +595,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 
 
-	truncU.DengetTruncU(para, DenOPWave, trace, truncerr);//temp.show();
+	truncU.DengetTruncU(para, DenOPWave, trace, truncerr, Entanglment);//temp.show();
 
 
 
@@ -616,6 +624,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 		MiuN = Energy - LEnergy;
 		FTrace = trace;
 		FTruncerr = truncerr;
+                FEntanglement = Entanglment;
                 fwave = Supp.wave;
 		
 	}

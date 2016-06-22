@@ -48,6 +48,7 @@ public:
 	double FEnergy;
 	double FTrace;
 	double FTruncerr;
+        double FEntanglement;
 
 
 	double MiuP, MiuN;

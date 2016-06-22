@@ -85,6 +85,8 @@ public:
 	void getDenS(const OP& OPWave);
 	void getDenE(const OP& OPWave);
 	void DengetTruncU(const Parameter& para, const OP& OPWave, double& trance, double& truncerr);
+        void DengetTruncU(const Parameter& para, const OP& OPWave, double& trance, double& truncerr, double& Entanglement);
+
 
 
 	OP operator+(const OP& a);
@@ -99,6 +101,10 @@ public:
 	void clear();
 	void save(std::ofstream& outfile);
 	void read(std::ifstream& infile);
+
+
+
+        
 };
 
 

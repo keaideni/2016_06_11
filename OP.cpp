@@ -1103,6 +1103,94 @@ void OP::DengetTruncU(const Parameter& para, const OP& OPWave, double& trance, d
 }
 
 
+
+
+
+void OP::DengetTruncU(const Parameter& para, const OP& OPWave, double& trance, double& truncerr, double& Entanglement)
+{
+        clear();
+        std::vector<Eigstruct> Denmat;
+
+        //get the denmat
+        for (auto it = OPWave.QMat.begin(); it != OPWave.QMat.end(); it++)
+        {
+                SelfAdjointEigenSolver<MatrixXd> es(it->second);
+                for (int i = 0; i<es.eigenvalues().size(); i++)
+                {
+                        Eigstruct temp = { it->first, es.eigenvalues()(i), es.eigenvectors().col(i) };
+                        Denmat.push_back(temp);
+                }
+        }
+
+        std::stable_sort(Denmat.begin(), Denmat.end(), comp);
+
+        int min = (Denmat.size() < para.D) ? Denmat.size() : para.D;
+
+        //get the RLQ/QDim
+        for (int i = 0; i<min; i++)
+        {
+                auto itt = QDim.find(Denmat.at(i).q);
+                if (itt != QDim.end())
+                {
+                        itt->second += 1;
+                }
+                else
+                {
+                        QDim.insert(std::pair<int, int>(Denmat.at(i).q, 1));
+                        RLQ.insert(std::pair<int, int>(Denmat.at(i).q, Denmat.at(i).q));
+                }
+        }
+
+        //get the QMat
+        for (auto it = QDim.begin(); it != QDim.end(); it++)
+        {
+                for (int i = 0; i<min; i++)
+                {
+                        if (Denmat.at(i).q == it->first)
+                        {
+                                int L = Denmat.at(i).state.size();
+                                int R = it->second;
+                                MatrixXd tempmat(L, R);
+                                QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
+                                break;
+                        }
+                }
+        }
+
+        for (auto it = QDim.begin(); it != QDim.end(); it++)
+        {
+                int ord(0);
+                for (int i = 0; i<min; i++)
+                {
+                        if (Denmat.at(i).q == it->first)
+                        {
+                                QMat.at(it->first).col(ord) = Denmat.at(i).state;
+                                ord++;
+                        }
+                }
+        }
+        trance = 0;
+        truncerr = 0;
+        Entanglement = 0;
+        for (int i = 0; i<Denmat.size(); i++)
+        {
+                trance += Denmat.at(i).lamda;
+                if(Denmat.at(i).lamda > 0.0000000001)
+                Entanglement = Entanglement - Denmat.at(i).lamda*log(Denmat.at(i).lamda)/log(2);
+                
+        }
+        for (int i = 0; i< min; i++)
+        {
+                truncerr += Denmat.at(i).lamda;
+        }
+
+        truncerr = trance - truncerr;
+}
+
+
+
+
+
 void OP::truncL(const OP& trunc, const OP& O)
 {
 	clear();
@@ -1423,3 +1511,11 @@ void OP::read(std::ifstream& infile)
 
 
 }
+
+
+
+
+
+
+
+
