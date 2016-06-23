@@ -665,9 +665,15 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			{
 				newS.update(para, OS + 1, Sys, m, para.gl);
 			}
+
+//============================================================================================================================================================
+                        //this part is for the wavetransform.
                         QWave ffwave;
-                        ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
+                        OP truncE;
+                        truncE.truncread(OE);
+                        ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
                         //ffwave.show();exit(true);
+//============================================================================================================================================================
 		}
 		else
 		{
@@ -679,9 +685,14 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			{
 				newS.update(para, OS + 1, n, Sys, para.gr);
 			}
+//============================================================================================================================================================
+                        //this part is for the wavetransform.
                         QWave ffwave;
-                        ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
+                        OP truncE;
+                        truncE.truncread(OE);
+                        ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
                         //ffwave.show();//exit(true);
+//=============================================================================================================================================================
 		}
 		//newS.show();
 		//truncU.show();

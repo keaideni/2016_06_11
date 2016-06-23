@@ -824,7 +824,7 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 
 //=========for the initial wave======================
-void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM)
+void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM, const OP& truncEN)
 {
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
@@ -838,6 +838,7 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 	}*/
 
 	OP truncU;truncU.transO(truncSM);
+	OP truncV;truncV.transO(truncEN);
 
 
 	for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
@@ -888,11 +889,12 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		}
 
 		
-		OP Fop;
+		OP Fop, Ffop;
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		WavePart[std::pair<int, int>(0,labeln)] = tempop;
+		//Ffop.rtime(Fop, truncV);
+		WavePart[std::pair<int, int>(0,labeln)] = Fop;
 
 
 	}
@@ -900,7 +902,7 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 
 
-void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSN)
+void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSN, const OP& truncEM)
 {
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
@@ -908,6 +910,7 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 	sys.findDim(n, sys, nothingDim, startDimS);
 
 	OP truncU;truncU.transO(truncSN);
+	OP truncV;truncV.transO(truncEM);
 
 	/*wave.show();
 	std::cout<<"the kron product of sys and m is "<<std::endl;
@@ -963,11 +966,12 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		}
 
 		
-		OP Fop;
+		OP Fop, Ffop;
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		WavePart[std::pair<int, int>(labelm,0)] = tempop;
+		//Ffop.rtime(Fop, truncV);
+		WavePart[std::pair<int, int>(labelm,0)] = Fop;
 
 
 	}
