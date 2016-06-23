@@ -670,7 +670,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //this part is for the wavetransform.
                         QWave ffwave;
                         OP truncE;
-                        truncE.truncread(OE);
+                        truncE.truncread(OE);//truncE.show();
                         ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
                         //ffwave.show();exit(true);
 //============================================================================================================================================================
@@ -689,7 +689,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //this part is for the wavetransform.
                         QWave ffwave;
                         OP truncE;
-                        truncE.truncread(OE);
+                        truncE.truncread(OE);//truncE.show();
                         ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
                         //ffwave.show();//exit(true);
 //=============================================================================================================================================================

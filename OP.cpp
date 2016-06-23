@@ -1545,7 +1545,7 @@ void OP::truncsave(const int& orbital)
         outfile << QDim.size() << std::endl;
         for (auto it = QDim.begin(); it != QDim.end(); it++)
         {
-                outfile << it->first << "       " << it->second << "        ";
+                outfile << it->first << "       " << it->second << "        "<<std::endl;
         }
 
 
@@ -1553,7 +1553,7 @@ void OP::truncsave(const int& orbital)
         outfile << RLQ.size() << std::endl;
         for (auto it = RLQ.begin(); it != RLQ.end(); it++)
         {
-                outfile << it->first << "          " << it->second << "             ";
+                outfile << it->first << "          " << it->second << "             "<<std::endl;
         }
         outfile << std::endl;
 
@@ -1563,6 +1563,10 @@ void OP::truncsave(const int& orbital)
         for (auto it = QMat.begin(); it != QMat.end(); it++)
         {
                 outfile << it->first << std::endl;
+
+                outfile << it->second.rows()<<std::endl;
+
+                outfile << it->second.cols() << std::endl;
 
                 outfile << it->second << std::endl;
                 
@@ -1616,11 +1620,13 @@ void OP::truncread(const int& orbital)
                 int tempQR;
 
                 infile >> tempQR;
+                int dimL, dimR;
+                infile >>dimL >>dimR;
 
-                MatrixXd A(QDim.at(RLQ.at(tempQR)), QDim.at(tempQR));
-                for (int i = 0; i < QDim.at(RLQ.at(tempQR)); i++)
+                MatrixXd A(dimL, dimR);
+                for (int i = 0; i < dimL; i++)
                 {
-                        for (int j = 0; j < QDim.at(tempQR); j++)
+                        for (int j = 0; j < dimR; j++)
                         {
                                 infile >> A(i, j);
 

@@ -830,15 +830,15 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 	std::unordered_map<int, int> nothingDim;
 
 	sys.findDim(sys, m, nothingDim, startDimS);
-	/*wave.show();
-	std::cout<<"the kron product of sys and m is "<<std::endl;
+	//wave.show();m.show();n.show();
+	/*std::cout<<"the kron product of sys and m is "<<std::endl;
 	for(auto hahait = nothingDim.begin(); hahait != nothingDim.end(); ++hahait)
 	{
 		std::cout<<hahait->first<<" => "<<hahait->second <<std::endl;
 	}*/
 
 	OP truncU;truncU.transO(truncSM);
-	OP truncV;truncV.transO(truncEN);
+	
 
 
 	for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
@@ -849,6 +849,10 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 		for(int labelm = 0; labelm < m.RLQ.size(); ++labelm)
 		{
+//===================================this part is important======================================================================================
+			auto itt = wave.WavePart.find(std::pair<int, int>(labelm, labeln));
+			if(itt == wave.WavePart.end()) continue;
+//============================for it some parts of wavepart could be disappear when caculate the ground state====================================
 			for(auto it = wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.begin(); it != wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.end(); ++it)
 			{
 				auto a = tempop.RLQ.find(it->first);
@@ -893,8 +897,8 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		//Ffop.rtime(Fop, truncV);
-		WavePart[std::pair<int, int>(0,labeln)] = Fop;
+		Ffop.rtime(Fop, truncEN); 
+		WavePart[std::pair<int, int>(0,labeln)] = Ffop;
 
 
 	}
@@ -910,7 +914,7 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 	sys.findDim(n, sys, nothingDim, startDimS);
 
 	OP truncU;truncU.transO(truncSN);
-	OP truncV;truncV.transO(truncEM);
+	
 
 	/*wave.show();
 	std::cout<<"the kron product of sys and m is "<<std::endl;
@@ -927,7 +931,10 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 		for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
 		{
-			//std::cout<<labelm<<std::endl<<labeln<<std::endl;
+//===================================this part is important======================================================================================
+			auto itt = wave.WavePart.find(std::pair<int, int>(labelm, labeln));
+			if(itt == wave.WavePart.end()) continue;
+//============================for it some parts of wavepart could be disappear when caculate the ground state====================================
 			for(auto it = wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.begin(); it != wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.end(); ++it)
 			{
 				auto a = tempop.RLQ.find(it->first);
@@ -970,9 +977,13 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		//Ffop.rtime(Fop, truncV);
-		WavePart[std::pair<int, int>(labelm,0)] = Fop;
+		Ffop.rtime(Fop, truncEM);
+		WavePart[std::pair<int, int>(labelm,0)] = Ffop;
 
 
 	}
 }
+
+
+
+

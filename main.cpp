@@ -16,9 +16,6 @@ int main()
 	
 	para.D = 150;
 	
-	
-
-
 
 
 
