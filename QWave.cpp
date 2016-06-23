@@ -824,14 +824,14 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 
 //=========for the initial wave======================
-/*void QWave::onestepSE(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n)
+void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSE)
 {
-	std::unordered_map<std::pair<int, int> int> startDimS;
+	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
-	tempS.findDim(sys, m, tempS.QDim, startDimS);
+	sys.findDim(sys, m, nothingDim, startDimS);
 
-
+	OP truncU;truncU.transO(truncSE);
 
 
 	for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
@@ -842,7 +842,111 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 		for(int labelm = 0; labelm < m.RLQ.size(); ++labelm)
 		{
-			temp
+			for(auto it = wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.begin(); it != wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.end(); ++it)
+			{
+				auto a = tempop.RLQ.find(it->first);
+				if(a == tempop.RLQ.end())
+					tempop.RLQ.insert(std::pair<int, int>(it->first, it->second+labelm));
+
+
+				auto b = tempop.QMat.find(it->first);
+				if(b == tempop.QMat.end())
+				{
+					int dimL(nothingDim.at(it->second + labelm));
+					int dimR(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).cols());
+					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
+
+					MatrixXd tempmat(MatrixXd::Zero(dimL, dimR));
+
+					int startL(startDimS.at(std::pair<int, int>(it->second, labelm)));
+					//std::cout<<startL<<std::endl;
+					//std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
+					//std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;
+
+					tempmat.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
+					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
+				}else
+				{
+					int dimL(nothingDim.at(it->second + labelm));
+					int dimR(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).cols());
+					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
+
+					int startL(startDimS.at(std::pair<int, int>(it->second, labelm)));
+					b->second.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
+				}
+			}
 		}
+
+		
+		OP Fop;
+		//truncU.show();
+		//tempop.show();
+		Fop.ltime(truncU, tempop);
+		WavePart[std::pair<int, int>(0,labeln)] = tempop;
+
+
 	}
-}*/
+}
+
+
+
+void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSE)
+{
+	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
+	std::unordered_map<int, int> nothingDim;
+
+	sys.findDim(n, sys, nothingDim, startDimS);
+
+	OP truncU;truncU.transO(truncSE);
+
+
+	for(int labelm = 0; labelm < m.RLQ.size(); ++labelm)
+	{
+		OP tempop;
+
+
+
+		for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
+		{
+			//std::cout<<labelm<<std::endl<<labeln<<std::endl;
+			for(auto it = wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.begin(); it != wave.WavePart.at(std::pair<int, int>(labelm,labeln)).RLQ.end(); ++it)
+			{
+				auto a = tempop.RLQ.find(it->first);
+				if(a == tempop.RLQ.end())
+					tempop.RLQ.insert(std::pair<int, int>(it->first, it->second+labeln));
+
+
+				auto b = tempop.QMat.find(it->first);
+				if(b == tempop.QMat.end())
+				{
+					int dimL(nothingDim.at(it->second + labeln));
+					int dimR(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).cols());
+					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
+
+					MatrixXd tempmat(MatrixXd::Zero(dimL, dimR));
+
+					int startL(startDimS.at(std::pair<int, int>(labeln, it->second)));
+					tempmat.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
+					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
+				}else
+				{
+					int dimL(nothingDim.at(it->second + labeln));
+					int dimR(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).cols());
+					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
+
+					int startL(startDimS.at(std::pair<int, int>(labeln, it->second)));
+					b->second.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
+				}
+			}
+		}
+
+		
+		OP Fop;
+		//truncU.show();
+		//tempop.show();
+		Fop.ltime(truncU, tempop);
+		WavePart[std::pair<int, int>(labelm,0)] = tempop;
+
+
+	}
+}

@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <Eigen/Eigenvalues> 
+#include <Eigen/Dense>
 #include "Parameter.h"
 
 
@@ -48,7 +49,7 @@ public:
 	void getValue(const int& str, const int& i, double& y);
 
 
-	void findDim(const OP& a, const OP& b, std::unordered_map<int, int>& oldDim, std::unordered_map<std::pair<int, int>, int, classcom>& startDim);
+	void findDim(const OP& a, const OP& b, std::unordered_map<int, int>& oldDim, std::unordered_map<std::pair<int, int>, int, classcom>& startDim) const;
 	void kronO(const OP& a, const OP&b);
 	//void getmat(MatrixXd& oldmat, const MatrixXd& tempmat, const int& startL1, const int& startR1);
 	void transO(const OP& a);

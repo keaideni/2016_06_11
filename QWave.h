@@ -95,7 +95,8 @@ public:
 
 	//=============for the initialation
 
-	void onestepSE(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n);
+	void onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP&truncSE);
+	void onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP&truncSE);
 
 
 

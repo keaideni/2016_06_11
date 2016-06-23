@@ -170,7 +170,7 @@ void OP::getValue(const int& str, const int& i, double& y)
 
 
 
-void OP::findDim(const OP& a, const OP& b, std::unordered_map<int, int> &oldDim, std::unordered_map<std::pair<int, int>, int, classcom> &startDim)
+void OP::findDim(const OP& a, const OP& b, std::unordered_map<int, int> &oldDim, std::unordered_map<std::pair<int, int>, int, classcom> &startDim) const
 {
 	for (auto ita = a.QDim.begin(); ita != a.QDim.end(); ita++)
 	{
@@ -1399,7 +1399,7 @@ void OP::show() const
 	std::cout << "the QMat: " << std::endl;
 	for (auto it = QMat.begin(); it != QMat.end(); it++)
 	{
-		std::cout << it->first << " => " << it->second << std::endl;
+		std::cout << it->first << " => " << it->second.rows()<<"x"<<it->second.cols() << std::endl;
 	}
 }
 
