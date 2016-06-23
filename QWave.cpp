@@ -487,7 +487,7 @@ QWave QWave::operator+(const QWave& wave)
 
 
 
-void QWave::show()
+void QWave::show() const
 {
 	for (auto it = WavePart.begin(); it != WavePart.end(); it++)
 	{
@@ -824,14 +824,20 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 
 //=========for the initial wave======================
-void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSE)
+void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM)
 {
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
 	sys.findDim(sys, m, nothingDim, startDimS);
+	/*wave.show();
+	std::cout<<"the kron product of sys and m is "<<std::endl;
+	for(auto hahait = nothingDim.begin(); hahait != nothingDim.end(); ++hahait)
+	{
+		std::cout<<hahait->first<<" => "<<hahait->second <<std::endl;
+	}*/
 
-	OP truncU;truncU.transO(truncSE);
+	OP truncU;truncU.transO(truncSM);
 
 
 	for(int labeln = 0; labeln < n.RLQ.size(); ++labeln)
@@ -859,9 +865,9 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 					MatrixXd tempmat(MatrixXd::Zero(dimL, dimR));
 
 					int startL(startDimS.at(std::pair<int, int>(it->second, labelm)));
-					//std::cout<<startL<<std::endl;
-					//std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
-					//std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;
+					/*std::cout<<startL<<std::endl;
+					std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
+					std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;*/
 
 					tempmat.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
 					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
@@ -871,7 +877,11 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 					int dimR(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).cols());
 					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
 
+
 					int startL(startDimS.at(std::pair<int, int>(it->second, labelm)));
+					/*std::cout<<startL<<std::endl;
+					std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
+					std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;*/
 					b->second.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
 				}
 			}
@@ -890,15 +900,21 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 
 
-void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSE)
+void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSN)
 {
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
 	sys.findDim(n, sys, nothingDim, startDimS);
 
-	OP truncU;truncU.transO(truncSE);
+	OP truncU;truncU.transO(truncSN);
 
+	/*wave.show();
+	std::cout<<"the kron product of sys and m is "<<std::endl;
+	for(auto hahait = nothingDim.begin(); hahait != nothingDim.end(); ++hahait)
+	{
+		std::cout<<hahait->first<<" => "<<hahait->second <<std::endl;
+	}*/
 
 	for(int labelm = 0; labelm < m.RLQ.size(); ++labelm)
 	{
@@ -926,6 +942,9 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 					MatrixXd tempmat(MatrixXd::Zero(dimL, dimR));
 
 					int startL(startDimS.at(std::pair<int, int>(labeln, it->second)));
+					/*std::cout<<startL<<std::endl;
+					std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
+					std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;*/
 					tempmat.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
 					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
 				}else
@@ -935,6 +954,9 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 					int MatL(wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first).rows());
 
 					int startL(startDimS.at(std::pair<int, int>(labeln, it->second)));
+					/*std::cout<<startL<<std::endl;
+					std::cout<<"the new matrix is "<<dimL <<"x"<<dimR<<std::endl;
+					std::cout<<"the old matrix is "<<MatL <<"x"<<dimR<<std::endl;*/
 					b->second.block(startL, 0, MatL, dimR) =  wave.WavePart.at(std::pair<int, int>(labelm,labeln)).QMat.at(it->first);
 				}
 			}

@@ -24,6 +24,7 @@ public:
 	Sub m, n;
 
 	QWave fwave;//to store the final wavefunction.
+        QWave fwave1;
 
 
 

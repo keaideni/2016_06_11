@@ -525,7 +525,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	begin = clock();
 	SuperEnergy Supp(para, Sup);
 	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
-
+        fwave1 = Supp.wave;//temp now
 
 
 
@@ -666,7 +666,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 				newS.update(para, OS + 1, Sys, m, para.gl);
 			}
                         QWave ffwave;
-                        ffwave.onestepSM(fwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
+                        ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
                         //ffwave.show();exit(true);
 		}
 		else
@@ -680,7 +680,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 				newS.update(para, OS + 1, n, Sys, para.gr);
 			}
                         QWave ffwave;
-                        ffwave.onestepSN(fwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
+                        ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU);
                         //ffwave.show();//exit(true);
 		}
 		//newS.show();
@@ -688,6 +688,8 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 
 		newS.trunc(truncU);
 		//newS.show();
+
+                truncU.truncsave(OS+1);
 
 		newS.save();
 	}
@@ -727,6 +729,7 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 
 		newS.trunc(truncU);
 		//truncUR.show();
+                truncU.truncsave(OE-1);
 
 		newS.save();
 	}

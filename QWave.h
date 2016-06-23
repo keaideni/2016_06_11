@@ -59,7 +59,7 @@ public:
 
 
 
-	void show();
+	void show() const;
 	void clear();
 
 
