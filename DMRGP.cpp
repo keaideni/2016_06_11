@@ -719,6 +719,14 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			{
 				newS.update(para, OE - 1, n, Env, para.gl);
 			}
+//============================================================================================================================================================
+                        //this part is for the wavetransform.
+                        QWave ffwave;
+                        OP truncS;
+                        truncS.truncread(OS);//truncE.show();
+                        ffwave.onestepEN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        //ffwave.show();exit(true);
+//============================================================================================================================================================
 		}
 		else
 		{
@@ -732,6 +740,14 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			{
 				newS.update(para, OE - 1, Env, m, para.gr);
 			}
+//============================================================================================================================================================
+                        //this part is for the wavetransform.
+                        QWave ffwave;
+                        OP truncS;
+                        truncS.truncread(OS);//truncE.show();
+                        ffwave.onestepEM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        //ffwave.show();exit(true);
+//============================================================================================================================================================
 			
 		}
 
