@@ -67,7 +67,9 @@ DMRGP::DMRGP(Parameter& para)
                 std::cout << "the file doesn't exit!" << std::endl;
         }
 
-
+        calnonestepSM=calnonestepSN=calnonestepEM=calnonestepEN=0;
+        calntwostepSM=calntwostepSN=calntwostepEM=calntwostepEN=1;
+        //caln = 0;
 	SweepP(para, OS, OE, dir);
 
 	allT = difftime(clock(), Abegin) / CLOCKS_PER_SEC;
@@ -296,6 +298,57 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 			//=======zhuyao kan Wave2OP d fangshi====================
 
 
+                        Sys.read(OS);//Sys.show();
+                        Env.read(OE);//Env.show();
+
+//====================================two step of the initial wave====================================================================
+                        if(dir == 1)
+                        {
+                                if(Gdir == -1)
+                                {
+                                        if(calnonestepSM == calntwostepSM)
+                                        {
+                                                //ffwave.show();
+                                                fwave11.twostepSM(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                //fwave11.show();
+                                                //exit(true);
+                                                ++calntwostepSM;
+                                        }
+                                }else
+                                {
+                                        if(calnonestepSN == calntwostepSN)
+                                        {
+                                                fwave11.twostepSN(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                //fwave11.show();exit(true);
+                                                ++calntwostepSN;
+                                        }
+                                }
+
+                        }else
+                        {
+                                if(Gdir == 1)
+                                {
+                                        if(calnonestepEM == calntwostepEM)
+                                        {
+                                                fwave11.twostepEM(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                //fwave11.show();exit(true);
+                                                ++calntwostepEM;
+                                        }
+                                }else
+                                {
+                                        if(calnonestepEN == calntwostepEN)
+                                        {
+                                                //ffwave.show();
+                                                fwave11.twostepEN(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                //fwave11.show();exit(true);
+                                                ++calntwostepEN;
+                                        }
+
+                                }
+                        }
+//==================================================this position is very important================================================
+
+
 			//==================this aprt is for the first right sweep, if first left sweep, it should absent==========
 			if (OS == (para.LatticeSize - 2) / 2)
 			{
@@ -304,9 +357,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 			}
 			//============================present with line dir *= -1 at the end of while(true)=================================
 
-			Sys.read(OS);//Sys.show();
-			Env.read(OE);//Env.show();
-
+			
 
 			
 
@@ -472,6 +523,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 			Gdir *= -1;*/
 			//============================present with line dir *= -1 before while(true)========================================
 
+                        //++caln;
 
 		}
 		dir *= (-1);    //local the for the first right sweep
@@ -486,7 +538,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                 << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
                 <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
-
+        
 }
 
 
@@ -506,24 +558,29 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 
 
-
-
-
-
-
-
-
-
-
 	Super Sup(para, Sys, m, n, Env, qtot);
+        //Sup.Wave.show();
 
+        //if(caln != 0)
+        //{
+                
 
+        //}
 
-
-
+        
 
 	begin = clock();
 	SuperEnergy Supp(para, Sup);
+        
+
+        if((Sys.Orbital != (para.ParticleNo-1)))
+        {
+                //std::cout<<"Sys.Orbital"<<Sys.Orbital<<std::endl;
+                
+                SuperEnergy Suppp(para, Sup, fwave11);//exit(true); 
+                 
+
+        }
 	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
         fwave1 = Supp.wave;//temp now
 
@@ -668,11 +725,12 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 
 //============================================================================================================================================================
                         //this part is for the wavetransform.
-                        QWave ffwave;
+                        //QWave ffwave;
                         OP truncE;
                         truncE.truncread(OE);//truncE.show();
                         ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
-                        //ffwave.show();exit(true);
+                        ++calnonestepSM;
+                        //fwave1.show();ffwave.show();exit(true);
 //============================================================================================================================================================
 		}
 		else
@@ -687,10 +745,11 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			}
 //============================================================================================================================================================
                         //this part is for the wavetransform.
-                        QWave ffwave;
+                        //QWave ffwave;
                         OP truncE;
                         truncE.truncread(OE);//truncE.show();
                         ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        ++calnonestepSN;
                         //ffwave.show();//exit(true);
 //=============================================================================================================================================================
 		}
@@ -721,10 +780,11 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			}
 //============================================================================================================================================================
                         //this part is for the wavetransform.
-                        QWave ffwave;
+                        //QWave ffwave;
                         OP truncS;
                         truncS.truncread(OS);//truncE.show();
                         ffwave.onestepEN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        ++calnonestepEN;
                         //ffwave.show();exit(true);
 //============================================================================================================================================================
 		}
@@ -742,10 +802,11 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
 			}
 //============================================================================================================================================================
                         //this part is for the wavetransform.
-                        QWave ffwave;
+                        //QWave ffwave;
                         OP truncS;
                         truncS.truncread(OS);//truncE.show();
                         ffwave.onestepEM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        ++calnonestepEM;
                         //ffwave.show();exit(true);
 //============================================================================================================================================================
 			

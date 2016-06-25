@@ -33,6 +33,7 @@ public:
 	QWave();
 	~QWave();
 	QWave(const QWave& wave);
+	void initial(const QWave& wave); //for the inital wave.
 	QWave(const OP& Sys, const OP& m, const OP& n, const OP& Env, int QTot);
 	void Initial(const OP& Sys, const OP& m, const OP& n, const OP& Env, int QTot);
 
@@ -99,8 +100,10 @@ public:
 	void onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSN, const OP& truncEM);
 	void onestepEM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM, const OP& truncEN);
 	void onestepEN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM, const OP& truncEN);
-
-
+	void twostepSM(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n);
+	void twostepSN(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n);
+	void twostepEM(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n);
+	void twostepEN(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n);
 
 
 

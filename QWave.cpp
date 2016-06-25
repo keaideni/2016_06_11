@@ -17,6 +17,20 @@ QWave::QWave(const QWave& wave)
 
 
 
+void QWave::initial(const QWave& wave)
+{
+	for(auto it = wave.WavePart.begin(); it != wave.WavePart.end(); ++it)
+	{
+		for(auto QMatit = it->second.QMat.begin(); QMatit != it->second.QMat.end(); ++QMatit)
+		{
+			WavePart.at(std::pair<int, int>(it->first.first, it->first.second)).QMat.at(QMatit->first) = QMatit->second;
+
+		}
+	}
+}
+
+
+
 
 
 
@@ -206,15 +220,17 @@ void QWave::Wave2f(std::vector<double>& f) const
 	f.clear();
 	for (auto it = WavePart.begin(); it != WavePart.end(); it++)
 	{
-		for (auto tempit = it->second.QMat.begin(); tempit != it->second.QMat.end(); tempit++)
+		for (int tempit = 0; tempit <= OP::Max; ++tempit)
 		{
-			int diml = tempit->second.rows();
-			int dimr = tempit->second.cols();
+			auto QMatit = it->second.QMat.find(tempit);
+			if(QMatit == it->second.QMat.end()) continue;
+			int diml = QMatit->second.rows();
+			int dimr = QMatit->second.cols();
 			for (int i = 0; i<diml; i++)
 			{
 				for (int j = 0; j < dimr; j++)
 				{
-					double tempv = (tempit->second)(i, j);
+					double tempv = (QMatit->second)(i, j);
 					f.push_back(tempv);
 				}
 			}
@@ -233,15 +249,17 @@ void QWave::f2Wave(const std::vector<double>& f)
 	int n(0);
 	for (auto it = WavePart.begin(); it != WavePart.end(); it++)
 	{
-		for (auto tempit = it->second.QMat.begin(); tempit != it->second.QMat.end(); tempit++)
+		for (auto tempit = 0; tempit<= OP::Max; ++tempit)
 		{
-			int diml = tempit->second.rows();
-			int dimr = tempit->second.cols();
+			auto QMatit = it->second.QMat.find(tempit);
+			if(QMatit == it->second.QMat.end()) continue;
+			int diml = QMatit->second.rows();
+			int dimr = QMatit->second.cols();
 			for (int i = 0; i<diml; i++)
 			{
 				for (int j = 0; j < dimr; j++)
 				{
-					(tempit->second)(i, j) = f.at(n);
+					(QMatit->second)(i, j) = f.at(n);
 					n++;
 				}
 			}
@@ -824,8 +842,10 @@ void QWave::ONWave(const OP& O, QWave& storewave) const
 
 
 //=========for the initial wave======================
+//=========================for the Sys eat site M==================================================================================
 void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSM, const OP& truncEN)
 {
+	clear();
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
@@ -897,7 +917,10 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		Ffop.rtime(Fop, truncEN); 
+		Ffop.rtime(truncEN, Fop); 
+		//Fop.show();
+		//Ffop.show();
+
 		WavePart[std::pair<int, int>(0,labeln)] = Ffop;
 
 
@@ -905,9 +928,10 @@ void QWave::onestepSM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 }
 
 
-
+//==============================fot the sys eats site N================================================================
 void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncSN, const OP& truncEM)
 {
+	clear();
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
@@ -977,7 +1001,7 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncU.show();
 		//tempop.show();
 		Fop.ltime(truncU, tempop);
-		Ffop.rtime(Fop, truncEM);
+		Ffop.rtime(truncEM, Fop);
 		WavePart[std::pair<int, int>(labelm,0)] = Ffop;
 
 
@@ -986,9 +1010,10 @@ void QWave::onestepSN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 
 
-
+//==================================for the Env eat the site M===========================================================
 void QWave::onestepEM(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncEM, const OP& truncSN)
 {
+	clear();
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
@@ -1060,7 +1085,7 @@ void QWave::onestepEM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncEM.show();
 		//tempop.show();
 		Fop.ltime(truncSN, tempop);
-		Ffop.rtime(Fop, truncV); 
+		Ffop.rtime(truncV, Fop); 
 		WavePart[std::pair<int, int>(0,labeln)] = Ffop;
 
 
@@ -1068,9 +1093,10 @@ void QWave::onestepEM(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 }
 
 
-
+//=============================for the Env eat the site N==========================================================================
 void QWave::onestepEN(const QWave& wave, const OP&sys, const OP&m, const OP&Env, const OP& n, const OP& truncEN, const OP& truncSM)
 {
+	clear();
 	std::unordered_map<std::pair<int, int>, int, classcom> startDimS;
 	std::unordered_map<int, int> nothingDim;
 
@@ -1140,7 +1166,7 @@ void QWave::onestepEN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 		//truncEN.show();
 		//tempop.show();
 		Fop.ltime(truncSM, tempop);
-		Ffop.rtime(Fop, truncV);
+		Ffop.rtime(truncV, Fop);
 		WavePart[std::pair<int, int>(labelm,0)] = Ffop;
 
 
@@ -1149,4 +1175,229 @@ void QWave::onestepEN(const QWave& wave, const OP&sys, const OP&m, const OP&Env,
 
 
 
+//===========================after the Sys eat site M, the Env spit site N====================
+void QWave::twostepSM(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n)
+{
+	clear();
+	std::unordered_map<std::pair<int, int>, int, classcom> startDim;
+	std::unordered_map<int, int> nothingDim;
 
+	Sys.findDim(Env, m, nothingDim, startDim);
+	//wave.show();
+	for(auto labeln = wave.WavePart.begin(); labeln != wave.WavePart.end(); ++labeln)
+	{
+
+		for(int labelm = 0; labelm < m.QDim.size(); ++labelm)
+		{
+			OP tempop;
+			for(auto it = labeln->second.QMat.begin(); it != labeln->second.QMat.end(); ++it)
+			{
+				int EnvN(it->first - labelm);
+				auto tempit = startDim.find(std::pair<int, int>(EnvN, labelm));
+				if(tempit == startDim.end()) continue;
+
+				auto RLQit = tempop.RLQ.find(EnvN);
+				if(RLQit == tempop.RLQ.end()) 
+					tempop.RLQ.insert(std::pair<int, int>(EnvN, labeln->second.RLQ.at(it->first)));
+
+				int DimL(it->second.rows());
+				int DimR(Env.QMat.at(EnvN).cols());
+				int start(tempit->second);
+
+				auto QMatit = tempop.QMat.find(EnvN);
+				if(QMatit == tempop.QMat.end())
+				{
+					//std::cout<<"the old dim: "<<it->second.rows()<<"x"<<it->second.cols()<<std::endl
+					//<<"the new dim: "<<DimL<<"x"<<DimR<<" begin at "<<"("<<0<<","<<start<<")"<<std::endl;
+
+					MatrixXd tempmat(it->second.block(0, start, DimL, DimR));
+
+
+					tempop.QMat.insert(std::pair<int, MatrixXd>(EnvN, tempmat));
+
+					/*std::cout << "the QMat: "<<std::endl
+					<<EnvN<<" => "<<tempop.QMat.at(EnvN);*/
+				}
+
+			}
+			//std::cout<<"<"<<labelm<<", "<<labeln->first.second<<">"<<std::endl;
+			//tempop.show();
+			if(tempop.QMat.size() != 0)
+			WavePart[std::pair<int, int>(labelm, labeln->first.second)] = tempop;
+		}
+	}
+}
+
+
+
+
+
+//===========================after the Sys eat site M, the Env spit site N====================
+void QWave::twostepSN(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n)
+{
+	clear();
+	std::unordered_map<std::pair<int, int>, int, classcom> startDim;
+	std::unordered_map<int, int> nothingDim;
+
+	Sys.findDim(n, Env, nothingDim, startDim);
+	/*for(auto tempitt = startDim.begin(); tempitt != startDim.end(); ++tempitt)
+	{
+		std::cout<<"<"<<tempitt->first.first<<", "<<tempitt->first.second<<">:"<<tempitt->second<<std::endl;
+	}exit(true);*/
+	//wave.show();
+	for(auto labelm = wave.WavePart.begin(); labelm != wave.WavePart.end(); ++labelm)
+	{
+
+		for(int labeln = 0; labeln < n.QDim.size(); ++labeln)
+		{
+			OP tempop;
+			for(auto it = labelm->second.QMat.begin(); it != labelm->second.QMat.end(); ++it)
+			{
+				int EnvN(it->first - labeln);
+				auto tempit = startDim.find(std::pair<int, int>(labeln, EnvN));
+				if(tempit == startDim.end()) continue;
+
+				auto RLQit = tempop.RLQ.find(EnvN);
+				if(RLQit == tempop.RLQ.end()) 
+					tempop.RLQ.insert(std::pair<int, int>(EnvN, labelm->second.RLQ.at(it->first)));
+
+				int DimL(it->second.rows());
+				int DimR(Env.QMat.at(EnvN).cols());
+				int start(tempit->second);
+
+				auto QMatit = tempop.QMat.find(EnvN);
+				if(QMatit == tempop.QMat.end())
+				{
+					//std::cout<<"the old dim: "<<it->second.rows()<<"x"<<it->second.cols()<<std::endl
+					//<<"the new dim: "<<DimL<<"x"<<DimR<<" begin at "<<"("<<0<<","<<start<<")"<<std::endl;
+
+					MatrixXd tempmat(it->second.block(0, start, DimL, DimR));
+
+
+					tempop.QMat.insert(std::pair<int, MatrixXd>(EnvN, tempmat));
+
+					/*std::cout << "the QMat: "<<std::endl
+					<<EnvN<<" => "<<tempop.QMat.at(EnvN);*/
+				}
+
+			}
+			//std::cout<<"<"<<labelm<<", "<<labeln->first.second<<">"<<std::endl;
+			//tempop.show();
+			if(tempop.QMat.size() != 0)
+			WavePart[std::pair<int, int>(labelm->first.first, labeln)] = tempop;
+		}
+	}
+}
+
+
+
+
+void QWave::twostepEM(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n)
+{
+	clear();
+	std::unordered_map<std::pair<int, int>, int, classcom> startDim;
+	std::unordered_map<int, int> nothingDim;
+
+	Sys.findDim(Sys, m, nothingDim, startDim);
+	//wave.show();
+	for(auto labeln = wave.WavePart.begin(); labeln != wave.WavePart.end(); ++labeln)
+	{
+
+		for(int labelm = 0; labelm < m.QDim.size(); ++labelm)
+		{
+			OP tempop;
+			for(auto it = labeln->second.QMat.begin(); it != labeln->second.QMat.end(); ++it)
+			{
+				int SysN(labeln->second.RLQ.at(it->first) - labelm);
+				auto tempit = startDim.find(std::pair<int, int>(SysN, labelm));
+				if(tempit == startDim.end()) continue;
+
+				auto RLQit = tempop.RLQ.find(it->first);
+				if(RLQit == tempop.RLQ.end()) 
+					tempop.RLQ.insert(std::pair<int, int>(it->first, SysN));
+
+				int DimL(Sys.QMat.at(SysN).rows());
+				int DimR(it->second.cols());
+				int start(tempit->second);
+
+				auto QMatit = tempop.QMat.find(it->first);
+				if(QMatit == tempop.QMat.end())
+				{
+					//std::cout<<"the old dim: "<<it->second.rows()<<"x"<<it->second.cols()<<std::endl
+					//<<"the new dim: "<<DimL<<"x"<<DimR<<" begin at "<<"("<<0<<","<<start<<")"<<std::endl;
+
+					MatrixXd tempmat(it->second.block(start, 0, DimL, DimR));
+
+
+					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
+
+					/*std::cout << "the QMat: "<<std::endl
+					<<EnvN<<" => "<<tempop.QMat.at(EnvN);*/
+				}
+
+			}
+			//std::cout<<"<"<<labelm<<", "<<labeln->first.second<<">"<<std::endl;
+			//tempop.show();
+			if(tempop.QMat.size() != 0)
+			WavePart[std::pair<int, int>(labelm, labeln->first.second)] = tempop;
+		}
+	}
+}
+
+
+
+void QWave::twostepEN(const QWave&wave, const OP&Sys, const OP&m, const OP& Env, const OP&n)
+{
+	clear();
+	std::unordered_map<std::pair<int, int>, int, classcom> startDim;
+	std::unordered_map<int, int> nothingDim;
+
+	Sys.findDim(n, Sys, nothingDim, startDim);
+	/*for(auto tempitt = startDim.begin(); tempitt != startDim.end(); ++tempitt)
+	{
+		std::cout<<"<"<<tempitt->first.first<<", "<<tempitt->first.second<<">:"<<tempitt->second<<std::endl;
+	}*/
+	//wave.show();
+	for(auto labelm = wave.WavePart.begin(); labelm != wave.WavePart.end(); ++labelm)
+	{
+
+		for(int labeln = 0; labeln < n.QDim.size(); ++labeln)
+		{
+			OP tempop;
+			for(auto it = labelm->second.QMat.begin(); it != labelm->second.QMat.end(); ++it)
+			{
+				int SysN(labelm->second.RLQ.at(it->first) - labeln);
+				auto tempit = startDim.find(std::pair<int, int>(labeln, SysN));
+				if(tempit == startDim.end()) continue;
+
+				auto RLQit = tempop.RLQ.find(it->first);
+				if(RLQit == tempop.RLQ.end()) 
+					tempop.RLQ.insert(std::pair<int, int>(it->first, SysN));
+
+				int DimL(Sys.QMat.at(SysN).rows());
+				int DimR(it->second.cols());
+				int start(tempit->second);
+
+				auto QMatit = tempop.QMat.find(it->first);
+				if(QMatit == tempop.QMat.end())
+				{
+					/*std::cout<<"the old dim: "<<it->second.rows()<<"x"<<it->second.cols()<<std::endl
+					<<"the new dim: "<<DimL<<"x"<<DimR<<" begin at "<<"("<<0<<","<<start<<")"<<std::endl;*/
+
+					MatrixXd tempmat(it->second.block(start, 0, DimL, DimR));
+
+
+					tempop.QMat.insert(std::pair<int, MatrixXd>(it->first, tempmat));
+
+					/*std::cout << "the QMat: "<<std::endl
+					<<EnvN<<" => "<<tempop.QMat.at(EnvN);*/
+				}
+
+			}
+			//std::cout<<"<"<<labelm<<", "<<labeln->first.second<<">"<<std::endl;
+			//tempop.show();
+			if(tempop.QMat.size() != 0)
+			WavePart[std::pair<int, int>(labelm->first.first, labeln)] = tempop;
+		}
+	}
+}
