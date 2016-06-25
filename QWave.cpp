@@ -220,10 +220,10 @@ void QWave::Wave2f(std::vector<double>& f) const
 	f.clear();
 	for (auto it = WavePart.begin(); it != WavePart.end(); it++)
 	{
-		for (int tempit = 0; tempit <= OP::Max; ++tempit)
+		for (auto QMatit = it->second.QMat.begin(); QMatit != it->second.QMat.end(); ++QMatit)
 		{
-			auto QMatit = it->second.QMat.find(tempit);
-			if(QMatit == it->second.QMat.end()) continue;
+			//auto QMatit = it->second.QMat.find(tempit);
+			//if(QMatit == it->second.QMat.end()) continue;
 			int diml = QMatit->second.rows();
 			int dimr = QMatit->second.cols();
 			for (int i = 0; i<diml; i++)
@@ -249,10 +249,10 @@ void QWave::f2Wave(const std::vector<double>& f)
 	int n(0);
 	for (auto it = WavePart.begin(); it != WavePart.end(); it++)
 	{
-		for (auto tempit = 0; tempit<= OP::Max; ++tempit)
+		for (auto QMatit = it->second.QMat.begin(); QMatit != it->second.QMat.end(); ++QMatit)
 		{
-			auto QMatit = it->second.QMat.find(tempit);
-			if(QMatit == it->second.QMat.end()) continue;
+			//auto QMatit = it->second.QMat.find(tempit);
+			//if(QMatit == it->second.QMat.end()) continue;
 			int diml = QMatit->second.rows();
 			int dimr = QMatit->second.cols();
 			for (int i = 0; i<diml; i++)
