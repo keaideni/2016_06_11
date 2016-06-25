@@ -172,11 +172,11 @@ void OP::getValue(const int& str, const int& i, double& y)
 
 void OP::findDim(const OP& a, const OP& b, std::unordered_map<int, int> &oldDim, std::unordered_map<std::pair<int, int>, int, classcom> &startDim) const
 {
-	for (int na = 0; na < OP::Max; ++na)
+	for (int na = 0; na <= OP::Max; ++na)
 	{
                 auto ita = a.QDim.find(na);
                 if(ita == a.QDim.end()) continue;
-		for (int nb = 0; nb < OP::Max; ++nb)
+		for (int nb = 0; nb <= OP::Max; ++nb)
 		{
                         auto itb = b.QDim.find(nb);
                         if(itb == b.QDim.end()) continue;

@@ -24,8 +24,11 @@ public:
 	Sub m, n;
 
 	QWave fwave;//to store the final wavefunction.
-        QWave fwave1, fwave11;//used to save the ground wave calculated
-        QWave ffwave;//used to save the transform wave for a while.
+//===============to store the transform wave=========================
+        QWave startwave, startwaveL, startwaveR;//to store the ground wave.
+        QWave initwave, initwaveL, initwaveR;//to store the initial wave.
+        QWave onewave, onewaveL, onewaveR;//to store the onestep wave.
+//====================================================================
         //used to define the order of the one step and two step;
         int calnonestepSM, calnonestepSN, calnonestepEM, calnonestepEN;
         int calntwostepSM, calntwostepSN, calntwostepEM, calntwostepEN;

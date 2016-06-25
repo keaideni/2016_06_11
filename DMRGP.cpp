@@ -309,7 +309,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                         if(calnonestepSM == calntwostepSM)
                                         {
                                                 //ffwave.show();
-                                                fwave11.twostepSM(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwave.twostepSM(onewave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveL.twostepSM(onewaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveR.twostepSM(onewaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+
                                                 //fwave11.show();
                                                 //exit(true);
                                                 ++calntwostepSM;
@@ -318,7 +321,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                 {
                                         if(calnonestepSN == calntwostepSN)
                                         {
-                                                fwave11.twostepSN(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwave.twostepSN(onewave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveL.twostepSN(onewaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveR.twostepSN(onewaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+
                                                 //fwave11.show();exit(true);
                                                 ++calntwostepSN;
                                         }
@@ -330,7 +336,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                 {
                                         if(calnonestepEM == calntwostepEM)
                                         {
-                                                fwave11.twostepEM(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwave.twostepEM(onewave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveL.twostepEM(onewaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveR.twostepEM(onewaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+
                                                 //fwave11.show();exit(true);
                                                 ++calntwostepEM;
                                         }
@@ -339,7 +348,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                         if(calnonestepEN == calntwostepEN)
                                         {
                                                 //ffwave.show();
-                                                fwave11.twostepEN(ffwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwave.twostepEN(onewave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveL.twostepEN(onewaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+                                                initwaveR.twostepEN(onewaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye);
+
                                                 //fwave11.show();exit(true);
                                                 ++calntwostepEN;
                                         }
@@ -570,19 +582,22 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
         
 
 	begin = clock();
-	SuperEnergy Supp(para, Sup);
-        
-
-        if((Sys.Orbital != (para.ParticleNo-1)))
+        SuperEnergy Supp;
+        if((Sys.Orbital == (para.ParticleNo-1)))
         {
+	        Supp.init(para, Sup);
+        }else
+        {
+
+        
                 //std::cout<<"Sys.Orbital"<<Sys.Orbital<<std::endl;
                 
-                SuperEnergy Suppp(para, Sup, fwave11);//exit(true); 
+                Supp.init(para, Sup, initwave);//exit(true); 
                  
 
         }
 	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
-        fwave1 = Supp.wave;//temp now
+        startwave = Supp.wave;//temp now
 
 
 
@@ -603,9 +618,16 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	para.Energy = 0;
 	Super SupL(para, Sys, m, n, Env, qtot - 1);
 	begin = clock();
-	SuperEnergy SuppL(para, SupL);
+        SuperEnergy SuppL;
+        if((Sys.Orbital == (para.ParticleNo-1)))
+        {
+                SuppL.init(para, SupL);
+        }else
+        {
+                SuppL.init(para, SupL, initwaveL);
+        }
 	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
-
+        startwaveL = SuppL.wave;
 
 
 	temp.clear();
@@ -629,9 +651,17 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	para.Energy = 0;
 	Super SupR(para, Sys, m, n, Env, qtot + 1);
 	begin = clock();
-	SuperEnergy SuppR(para, SupR);
-	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
+        SuperEnergy SuppR;
+        if((Sys.Orbital == (para.ParticleNo-1)))
+        {
+	       SuppR.init(para, SupR);
+        }else
+        {
+               SuppR.init(para, SupR, initwaveR);
 
+        }
+	saveT += difftime(clock(), begin) / CLOCKS_PER_SEC;
+        startwaveR = SuppR.wave;
 
 
 	temp.clear();
@@ -728,7 +758,10 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //QWave ffwave;
                         OP truncE;
                         truncE.truncread(OE);//truncE.show();
-                        ffwave.onestepSM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewave.onestepSM(startwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewaveL.onestepSM(startwaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewaveR.onestepSM(startwaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+
                         ++calnonestepSM;
                         //fwave1.show();ffwave.show();exit(true);
 //============================================================================================================================================================
@@ -748,7 +781,10 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //QWave ffwave;
                         OP truncE;
                         truncE.truncread(OE);//truncE.show();
-                        ffwave.onestepSN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewave.onestepSN(startwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewaveL.onestepSN(startwaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+                        onewaveR.onestepSN(startwaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncE);
+
                         ++calnonestepSN;
                         //ffwave.show();//exit(true);
 //=============================================================================================================================================================
@@ -783,7 +819,10 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //QWave ffwave;
                         OP truncS;
                         truncS.truncread(OS);//truncE.show();
-                        ffwave.onestepEN(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewave.onestepEN(startwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewaveL.onestepEN(startwaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewaveR.onestepEN(startwaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+
                         ++calnonestepEN;
                         //ffwave.show();exit(true);
 //============================================================================================================================================================
@@ -805,7 +844,10 @@ void DMRGP::truncUpdateSweepP(const Parameter& para, int& OS, int& OE, int dir)
                         //QWave ffwave;
                         OP truncS;
                         truncS.truncread(OS);//truncE.show();
-                        ffwave.onestepEM(fwave1, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewave.onestepEM(startwave, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewaveL.onestepEM(startwaveL, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+                        onewaveR.onestepEM(startwaveR, Sys.SubSysEye, m.SubSysEye, Env.SubSysEye, n.SubSysEye, truncU, truncS);
+
                         ++calnonestepEM;
                         //ffwave.show();exit(true);
 //============================================================================================================================================================
