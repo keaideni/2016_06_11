@@ -884,10 +884,12 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 	QWave wave1, wave2;
 	std::vector<double> f, f1;
 	fwave.Wave2f(f);
+        QWave ffwave(fwave);
 	double number(0);
 	wave1.clear();
 	wave1.OSWave2New(corrn, fwave);
-	wave1.Wave2f(f1);
+        ffwave.initial(wave1);
+	ffwave.Wave2f(f1);
 
 	for(int i = 0; i < f.size(); ++i)
 	{
@@ -897,7 +899,8 @@ void DMRGP::CacuCorr(const OP& corrn, const OP& corrc, const OP& corrcdag)
 	wave1.OSWave2New(corrcdag, fwave);
 	wave2.clear();
 	wave2.OEWave2New(corrc, wave1);
-	wave2.Wave2f(f1);
+        ffwave.initial(wave2);
+	ffwave.Wave2f(f1);
 	correlation = 0;
 	for(int i = 0; i < f.size(); ++i)
 	{
