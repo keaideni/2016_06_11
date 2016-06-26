@@ -196,10 +196,10 @@ void DMRGP::getEnergyP(Parameter& para, int dir)
 		<< ",    truncerr = " << std::setprecision(15) << truncerr << std::endl;
 
 
-	std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
+	/*std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
 	<< ",    E = " <<std::setw(10)<< std::setprecision(15)<<para.Energy <<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;*/
 	//FEnergy = para.Energy;
 	//FTrace = trace;
 	//FTruncerr = truncerr;
@@ -283,7 +283,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 	{
 
 		SaveAll << "the " << (flag + 1) << "th Sweep" << std::endl;
-		std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
+		//std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
 		//dir*=(-1);//local here for the first left direction sweep
 
 
@@ -391,12 +391,16 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                 std::ofstream outfile1, outfile2;
                                 if(OrbitalM % 2 == 1)
                                 {
-                                        outfile1.open("./result/resonator.txt");
-                                        outfile2.open("./result/qubit.txt");
+                                        std::string str = "./result/resonator.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
+                                        outfile1.open(str);
+                                        str = "./result/qubit.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
+                                        outfile2.open(str);
                                 }else
                                 {
-                                        outfile1.open("./result/qubit.txt");
-                                        outfile2.open("./result/resonator.txt");
+                                        std::string str = "./result/resonator.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
+                                        outfile1.open(str);
+                                        str = "./result/qubit.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
+                                        outfile2.open(str);
                                 }
 
 				int i(OrbitalM + 1);//this label for Sigma;
@@ -414,8 +418,8 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 					int distence(i - j);
 
-					std::cout<<"Distence = " << distence << ", the correlation = "
-					<<correlation<<std::endl;
+					/*std::cout<<"Distence = " << distence << ", the correlation = "
+					<<correlation<<std::endl;*/
                                         outfile1<<"Distence = " << distence << ", the correlation = "
                                         <<correlation<<std::endl;
 
@@ -450,8 +454,8 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
                                         int distence(i - j);
 
-                                        std::cout<<"Distence = " << distence << ", the correlation = "
-                                        <<correlation<<std::endl;
+                                        /*std::cout<<"Distence = " << distence << ", the correlation = "
+                                        <<correlation<<std::endl;*/
                                         outfile2<<"Distence = " << distence << ", the correlation = "
                                         <<correlation<<std::endl;
 
@@ -546,10 +550,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                 << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
                 <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
-        std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
+        /*std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
                 << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
-                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
+                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;*/
         
 }
 
@@ -701,11 +705,11 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 
 
-	std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy << ",    LE = " << std::setprecision(15)<<LEnergy  << ",    RE = " << std::setprecision(15)<<REnergy<<std::endl
+	/*std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy << ",    LE = " << std::setprecision(15)<<LEnergy  << ",    RE = " << std::setprecision(15)<<REnergy<<std::endl
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
         << "      OrbitalM ="  <<std::setw(2)<<OrbitalM << ",  OrbitalN =" <<std::setw(2)<< OrbitalN
 	<<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;*/
 
 	if (Sys.Orbital == (para.LatticeSize - 2) / 2)
 	{
