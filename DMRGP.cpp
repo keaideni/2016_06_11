@@ -36,7 +36,7 @@ DMRGP::DMRGP(Parameter& para)
 	SaveAll.open("./result/SaveAll");
 	if (!SaveAll.is_open())
 	{
-		std::cout << "the file doesn't exit!" << std::endl;
+		//std::cout << "the file doesn't exit!" << std::endl;
 	}
 
 	saveT = 0;
@@ -69,7 +69,7 @@ DMRGP::DMRGP(Parameter& para)
 
         calnonestepSM=calnonestepSN=calnonestepEM=calnonestepEN=0;
         calntwostepSM=calntwostepSN=calntwostepEM=calntwostepEN=1;
-        //caln = 0;
+        caln = 0;
 	SweepP(para, OS, OE, dir);
 
 	allT = difftime(clock(), Abegin) / CLOCKS_PER_SEC;
@@ -391,16 +391,16 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                                 std::ofstream outfile1, outfile2;
                                 if(OrbitalM % 2 == 1)
                                 {
-                                        std::string str = "./result/resonator.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
-                                        outfile1.open(str);
-                                        str = "./result/qubit.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
-                                        outfile2.open(str);
+                                        
+                                        outfile1.open("./result/resonator.txt");
+                                        
+                                        outfile2.open("./result/qubit.txt");
                                 }else
                                 {
-                                        std::string str = "./result/resonator.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
-                                        outfile1.open(str);
-                                        str = "./result/qubit.txt_gl_0.0"+itos(para.gl*1000)+"_gr_0.0"+itos(para.gr*1000);
-                                        outfile2.open(str);
+                                        
+                                        outfile1.open("./result/resonator.txt");
+                                        
+                                        outfile2.open("./result/qubit.txt");
                                 }
 
 				int i(OrbitalM + 1);//this label for Sigma;
@@ -539,7 +539,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 			Gdir *= -1;*/
 			//============================present with line dir *= -1 before while(true)========================================
 
-                        //++caln;
+                        ++caln;
 
 		}
 		dir *= (-1);    //local the for the first right sweep
@@ -587,7 +587,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 	begin = clock();
         SuperEnergy Supp;
-        if((Sys.Orbital == (para.ParticleNo-1)))
+        if(caln == 0)//(Sys.Orbital == (para.ParticleNo-1)))
         {
 	        Supp.init(para, Sup);
         }else
@@ -623,7 +623,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	Super SupL(para, Sys, m, n, Env, qtot - 1);
 	begin = clock();
         SuperEnergy SuppL;
-        if((Sys.Orbital == (para.ParticleNo-1)))
+        if(caln == 0)//(Sys.Orbital == (para.ParticleNo-1)))
         {
                 SuppL.init(para, SupL);
         }else
@@ -656,7 +656,7 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 	Super SupR(para, Sys, m, n, Env, qtot + 1);
 	begin = clock();
         SuperEnergy SuppR;
-        if((Sys.Orbital == (para.ParticleNo-1)))
+        if(caln == 0)//(Sys.Orbital == (para.ParticleNo-1)))
         {
 	       SuppR.init(para, SupR);
         }else

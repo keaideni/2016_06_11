@@ -14,7 +14,7 @@ int main()
 	OP::Max = para.ParticleNo + 1;
 
 	
-	para.D = 150;
+	//para.D = 200;
 	
 
 

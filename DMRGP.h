@@ -32,7 +32,7 @@ public:
         //used to define the order of the one step and two step;
         int calnonestepSM, calnonestepSN, calnonestepEM, calnonestepEN;
         int calntwostepSM, calntwostepSN, calntwostepEM, calntwostepEN;
-        //int caln;
+        int caln;
 
 
 
