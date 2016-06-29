@@ -71,7 +71,95 @@ DMRGP::DMRGP(Parameter& para)
         calntwostepSM=calntwostepSN=calntwostepEM=calntwostepEN=1;
         caln = 0;
 	SweepP(para, OS, OE, dir);
+//=========================calculate the correlation==================================
+        std::ofstream outfile1, outfile2;
+        if(OrbitalM % 2 == 1)
+        {
+                                        
+                outfile1.open("./result/resonator.txt");
+                
+                outfile2.open("./result/qubit.txt");
+                }else
+                {
+                                        
+                        outfile1.open("./result/resonator.txt");
+                                        
+                        outfile2.open("./result/qubit.txt");
+                }
 
+                int i(OrbitalM + 1);//this label for Sigma;
+                int j(OrbitalM - 1);//this label for Sigmadag and N;
+                int fflag(1);
+                while(true)
+                {
+                                        
+                                        
+
+                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+                                        //corrn.show();Sys.SubSysEye.show();
+
+                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+
+                        int distence(i - j);
+
+                        std::cout<<"Distence = " << distence << ", the correlation = "
+                        <<correlation<<std::endl;
+                        outfile1<<"Distence = " << distence << ", the correlation = "
+                        <<correlation<<std::endl;
+
+
+                        if(fflag == 1)
+                        {
+                                i += 2;
+                        }else
+                        {
+                                j-= 2;
+                        }
+                        if((i>para.LatticeSize/2)||(j<0))break;
+                        fflag *= -1;
+
+
+                }
+
+
+
+                i=(OrbitalM + 2);//this label for Sigma;
+                j=(OrbitalM - 2);//this label for Sigmadag and N;
+                fflag=1;
+                while(true)
+                {
+                                        
+                                        
+
+                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
+                        //corrn.show();Sys.SubSysEye.show();
+
+                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
+
+                        int distence(i - j);
+
+                        std::cout<<"Distence = " << distence << ", the correlation = "
+                        <<correlation<<std::endl;
+                        outfile2<<"Distence = " << distence << ", the correlation = "
+                        <<correlation<<std::endl;
+
+
+                        if(fflag == 1)
+                        {
+                                i += 2;
+                        }else
+                        {
+                                j-= 2;
+                        }
+                        if((i>para.LatticeSize/2)||(j<0))break;
+                        fflag *= -1;
+
+
+                }
+
+                outfile1.close();
+                outfile2.close();
+//======================================================================================================
 	allT = difftime(clock(), Abegin) / CLOCKS_PER_SEC;
 	SaveAll << "===========Sweep finished==============" << std::endl;
 	SaveAll << "The build up process takes " << allT << " seconds!" << std::endl;
@@ -196,10 +284,10 @@ void DMRGP::getEnergyP(Parameter& para, int dir)
 		<< ",    truncerr = " << std::setprecision(15) << truncerr << std::endl;
 
 
-	/*std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
+	std::cout << "Q = " << qtot << "    WaveD = " <<std::setw(4)<< Sup.Dim
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
 	<< ",    E = " <<std::setw(10)<< std::setprecision(15)<<para.Energy <<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;*/
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr<<std::endl;
 	//FEnergy = para.Energy;
 	//FTrace = trace;
 	//FTruncerr = truncerr;
@@ -283,7 +371,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 	{
 
 		SaveAll << "the " << (flag + 1) << "th Sweep" << std::endl;
-		//std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
+		std::cout<<"the "<<(flag+1)<<"th Sweep"<<std::endl;
 		//dir*=(-1);//local here for the first left direction sweep
 
 
@@ -388,93 +476,7 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
 
 			if((flag == para.SweepNo -1) &&(OS == (para.LatticeSize - 2) / 2))
 			{
-                                std::ofstream outfile1, outfile2;
-                                if(OrbitalM % 2 == 1)
-                                {
-                                        
-                                        outfile1.open("./result/resonator.txt");
-                                        
-                                        outfile2.open("./result/qubit.txt");
-                                }else
-                                {
-                                        
-                                        outfile1.open("./result/resonator.txt");
-                                        
-                                        outfile2.open("./result/qubit.txt");
-                                }
-
-				int i(OrbitalM + 1);//this label for Sigma;
-				int j(OrbitalM - 1);//this label for Sigmadag and N;
-                                int fflag(1);
-				while(true)
-				{
-					
-					
-
-					corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
-					//corrn.show();Sys.SubSysEye.show();
-
-					CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
-
-					int distence(i - j);
-
-					/*std::cout<<"Distence = " << distence << ", the correlation = "
-					<<correlation<<std::endl;*/
-                                        outfile1<<"Distence = " << distence << ", the correlation = "
-                                        <<correlation<<std::endl;
-
-
-                                        if(fflag == 1)
-                                        {
-                                                i += 2;
-                                        }else
-                                        {
-                                                j-= 2;
-                                        }
-                                        if((i>para.LatticeSize/2)||(j<0))break;
-                                        fflag *= -1;
-
-
-				}
-
-
-
-                                i=(OrbitalM + 2);//this label for Sigma;
-                                j=(OrbitalM - 2);//this label for Sigmadag and N;
-                                fflag=1;
-                                while(true)
-                                {
-                                        
-                                        
-
-                                        corr.read(i, 1);corrdag.read(j, 2);corrn.read(j, 3);
-                                        //corrn.show();Sys.SubSysEye.show();
-
-                                        CacuCorr(corrn.CorrO, corr.CorrO, corrdag.CorrO);
-
-                                        int distence(i - j);
-
-                                        /*std::cout<<"Distence = " << distence << ", the correlation = "
-                                        <<correlation<<std::endl;*/
-                                        outfile2<<"Distence = " << distence << ", the correlation = "
-                                        <<correlation<<std::endl;
-
-
-                                        if(fflag == 1)
-                                        {
-                                                i += 2;
-                                        }else
-                                        {
-                                                j-= 2;
-                                        }
-                                        if((i>para.LatticeSize/2)||(j<0))break;
-                                        fflag *= -1;
-
-
-                                }
-
-                                outfile1.close();
-                                outfile2.close();
+                                
 
 
 
@@ -550,10 +552,10 @@ void DMRGP::SweepP(Parameter& para, int& OS, int& OE, int& dir)
                 << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
                 <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
-        /*std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
+        std::cout << "Q = " << para.ParticleNo << "    LatticeSize = " << std::setw(4) << para.LatticeSize << ",      gr = " << std::setw(4) << para.gr << ",    gl = " << std::setw(4) << para.gl
                 << ",        MiuP = " << std::setprecision(15) << MiuP << ",    MiuN = " << std::setprecision(15) << MiuN << ",    trace = " << std::setprecision(15) << FTrace
                 << ",    truncerr = " << std::setprecision(15) << FTruncerr << "              para.D = "<<std::setprecision(15)<<para.D
-                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;*/
+                <<"          Entanglment = "<<std::setprecision(15)<<FEntanglement<<std::endl;
         
 }
 
@@ -705,11 +707,11 @@ void DMRGP::getEnergySweepP(Parameter& para, int dir)
 
 
 
-	/*std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy << ",    LE = " << std::setprecision(15)<<LEnergy  << ",    RE = " << std::setprecision(15)<<REnergy<<std::endl
+	std::cout << "Q = " << qtot << ",    E = " << std::setprecision(15)<<Energy << ",    LE = " << std::setprecision(15)<<LEnergy  << ",    RE = " << std::setprecision(15)<<REnergy<<std::endl
 	<< "      OS ="  <<std::setw(2)<<Sys.Orbital << ",  OE =" <<std::setw(2)<< Env.Orbital
         << "      OrbitalM ="  <<std::setw(2)<<OrbitalM << ",  OrbitalN =" <<std::setw(2)<< OrbitalN
 	<<",    trace = "<< std::setprecision(15)<<trace
-	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;*/
+	<<",    truncerr = "<< std::setprecision(15)<<truncerr << std::endl<<std::endl;
 
 	if (Sys.Orbital == (para.LatticeSize - 2) / 2)
 	{
